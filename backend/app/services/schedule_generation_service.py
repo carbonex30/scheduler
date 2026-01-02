@@ -148,6 +148,10 @@ class ScheduleGenerationService:
         """
         employee_id = str(employee.id)
 
+        # CRITICAL: Check department match first
+        if str(employee.department_id) != str(shift_template.department_id):
+            return False, "Employee department does not match shift department"
+
         # Check weekly hours limit
         week_start = shift_date - timedelta(days=shift_date.weekday())
         week_hours = employee_hours.get(f"{employee_id}_{week_start}", Decimal('0'))
