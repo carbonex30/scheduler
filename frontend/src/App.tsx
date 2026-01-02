@@ -6,6 +6,7 @@ import { Departments } from './pages/Departments'
 import { Employees } from './pages/Employees'
 import { ShiftTemplates } from './pages/ShiftTemplates'
 import { Schedules } from './pages/Schedules'
+import { ScheduleDetail } from './pages/ScheduleDetail'
 import { Import } from './pages/Import'
 import { MLTraining } from './pages/MLTraining'
 import { Settings } from './pages/Settings'
@@ -30,6 +31,7 @@ function App() {
             <Route path="employees" element={<Employees />} />
             <Route path="shift-templates" element={<ShiftTemplates />} />
             <Route path="schedules" element={<Schedules />} />
+            <Route path="schedules/:scheduleId" element={<ScheduleDetail />} />
             <Route path="import" element={<Import />} />
             <Route path="ml-training" element={<MLTraining />} />
             <Route path="settings" element={<Settings />} />

@@ -11,6 +11,7 @@ from sqlalchemy import select, func, desc
 
 from app.database import get_db
 from app.models.schedule import Schedule
+from app.models.assignment import Assignment
 from app.schemas.schedule import (
     ScheduleCreate,
     ScheduleUpdate,
@@ -19,6 +20,7 @@ from app.schemas.schedule import (
     ScheduleGenerateRequest,
     ScheduleGenerateResponse,
 )
+from app.schemas.assignment import AssignmentResponse
 from app.services.schedule_generation_service import ScheduleGenerationService
 
 router = APIRouter()
@@ -227,3 +229,35 @@ def publish_schedule(
     db.refresh(schedule)
 
     return ScheduleResponse.model_validate(schedule)
+
+
+@router.get("/{schedule_id}/assignments", response_model=list[AssignmentResponse])
+def get_schedule_assignments(
+    schedule_id: UUID,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(1000, ge=1, le=10000),
+    db: Session = Depends(get_db),
+):
+    """Get all assignments for a schedule"""
+    # Verify schedule exists
+    stmt = select(Schedule).where(Schedule.id == schedule_id)
+    schedule = db.execute(stmt).scalar_one_or_none()
+
+    if not schedule:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Schedule not found"
+        )
+
+    # Get assignments
+    stmt = (
+        select(Assignment)
+        .where(Assignment.schedule_id == schedule_id)
+        .order_by(Assignment.shift_date, Assignment.start_time)
+        .offset(skip)
+        .limit(limit)
+    )
+
+    assignments = db.execute(stmt).scalars().all()
+
+    return [AssignmentResponse.model_validate(a) for a in assignments]

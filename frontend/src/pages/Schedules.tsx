@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Calendar,
@@ -19,6 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select } from '@/components/ui/select'
 
 export function Schedules() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [showGenerateDialog, setShowGenerateDialog] = useState(false)
   const [generationResult, setGenerationResult] = useState<any>(null)
@@ -382,10 +384,7 @@ export function Schedules() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        // TODO: Navigate to schedule detail view
-                        console.log('View schedule:', schedule.id)
-                      }}
+                      onClick={() => navigate(`/schedules/${schedule.id}`)}
                     >
                       <Eye className="mr-1 h-3 w-3" />
                       View
